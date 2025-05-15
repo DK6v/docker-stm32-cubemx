@@ -1,0 +1,34 @@
+services:
+  stm32cubemx:   
+    container_name: stm32cubemx
+    image: stm32cubemx:42.0.0
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    command: sleep 600
+    environment:
+      - DISPLAY=${DISPLAY}
+      - XAUTHORITY=/tmp/.Xauthority
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      # X11 server socket and authority
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ${XAUTHORITY}:/tmp/.Xauthority:ro
+      # D-Bus session configuration file
+      - /usr/share/dbus-1/session.conf:/usr/share/dbus-1/session.conf
+      # Mount special files
+      - /dev/dri:/dev/dri
+      - /dev/snd:/dev/snd
+      - /var/run/dbus/:/var/run/dbus/
+      # Allow the container to inspect the hostname
+      - /var/run/docker.sock:/var/run/docker.sock
+      # STM32 CubeMX application
+      # - binaries:/cubemx
+      # Project directory
+      - ./project:/project
+    privileged: true
+    restart: "no"
+
+# volumes:
+#   binaries:
